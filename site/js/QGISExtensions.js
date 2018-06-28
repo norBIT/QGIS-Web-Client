@@ -33,9 +33,9 @@ Ext.extend(QGIS.WMSCapabilitiesLoader, GeoExt.tree.WMSCapabilitiesLoader, {
   projectSettings: null,
   //this list holds layer properties, indexed by layername
   layerProperties: new Array(),
-    //this list holds a mapping between title and layer name - the tree shows the title, the WMS requests need names
-    layerTitleNameMapping: new Array(),
-    initialVisibleLayers: new Array(),
+  //this list holds a mapping between title and layer name - the tree shows the title, the WMS requests need names
+  layerTitleNameMapping: new Array(),
+  initialVisibleLayers: new Array(),
   getParams: function(node) {
     return {
       SERVICE: 'WMS',
@@ -99,13 +99,13 @@ Ext.extend(QGIS.WMSCapabilitiesLoader, GeoExt.tree.WMSCapabilitiesLoader, {
 
           // based on OpenLayers.Format.WMSCapabilities.v1 parser
           "Layer": function(node, obj) {
-                        var parentLayer, capability;
-                        if (obj.capability) {
-                                capability = obj.capability;
-                                parentLayer = obj;
-                        } else {
-                                capability = obj;
-                        }
+            var parentLayer, capability;
+            if (obj.capability) {
+              capability = obj.capability;
+              parentLayer = obj;
+            } else {
+              capability = obj;
+            }
             var attrNode = node.getAttributeNode("queryable");
             var queryable = (attrNode && attrNode.specified) ?
               node.getAttribute("queryable") : null;
@@ -134,8 +134,8 @@ Ext.extend(QGIS.WMSCapabilitiesLoader, GeoExt.tree.WMSCapabilitiesLoader, {
             var noSubsets = node.getAttribute('noSubsets');
             var fixedWidth = node.getAttribute('fixedWidth');
             var fixedHeight = node.getAttribute('fixedHeight');
-                        var parent = parentLayer || {},
-                                extend = OpenLayers.Util.extend;
+            var parent = parentLayer || {},
+                extend = OpenLayers.Util.extend;
             var layer = {nestedLayers: [],
                     styles: parentLayer ? [].concat(parentLayer.styles) : [],
                     srs: parentLayer ? extend({}, parent.srs) : {},
@@ -155,28 +155,28 @@ Ext.extend(QGIS.WMSCapabilitiesLoader, GeoExt.tree.WMSCapabilitiesLoader, {
                         (opaque === "1" || opaque === "true" ) :
                         (parent.opaque || false),
 
-                                        // QGIS extensions
-                                        visible: (visible && visible !== "") ?
-                                            ( visible === "1" || visible === "true" ) : true,
-                                        displayField: displayField,
-                                        showCheckbox: (showCheckbox && showCheckbox !== "") ?
-                                            ( showCheckbox === "1" || showCheckbox === "true" ) : true,
-                                        showLegend: (showLegend && showLegend !== "") ?
-                                            ( showLegend === "1" || showLegend === "true" ) : true,
-                                        showMetadata: (showMetadata && showMetadata !== "") ?
-                                            ( showMetadata === "1" || showMetadata === "true" ) : true,
+                    // QGIS extensions
+                    visible: (visible && visible !== "") ?
+                        ( visible === "1" || visible === "true" ) : true,
+                    displayField: displayField,
+                    showCheckbox: (showCheckbox && showCheckbox !== "") ?
+                                  ( showCheckbox === "1" || showCheckbox === "true" ) : true,
+                    showLegend: (showLegend && showLegend !== "") ?
+                                ( showLegend === "1" || showLegend === "true" ) : true,
+                    showMetadata: (showMetadata && showMetadata !== "") ?
+                                  ( showMetadata === "1" || showMetadata === "true" ) : true,
 
-                                        noSubsets: (noSubsets !== null) ?
-                                                (noSubsets === "1" || noSubsets === "true" ) :
-                                                (parent.noSubsets || false),
-                                        fixedWidth: (fixedWidth != null) ?
-                                                parseInt(fixedWidth) : (parent.fixedWidth || 0),
-                                        fixedHeight: (fixedHeight != null) ?
-                                                parseInt(fixedHeight) : (parent.fixedHeight || 0),
-                                        minScale: parent.minScale,
-                                        maxScale: parent.maxScale,
-                                        attribution: parent.attribution
-                                };
+                    noSubsets: (noSubsets !== null) ?
+                               (noSubsets === "1" || noSubsets === "true" ) :
+                               (parent.noSubsets || false),
+                    fixedWidth: (fixedWidth != null) ?
+                                parseInt(fixedWidth) : (parent.fixedWidth || 0),
+                    fixedHeight: (fixedHeight != null) ?
+                                 parseInt(fixedHeight) : (parent.fixedHeight || 0),
+                    minScale: parent.minScale,
+                    maxScale: parent.maxScale,
+                    attribution: parent.attribution
+            };
 
             layer.capability = capability;
             this.readChildNodes(node, layer);
@@ -188,14 +188,6 @@ Ext.extend(QGIS.WMSCapabilitiesLoader, GeoExt.tree.WMSCapabilitiesLoader, {
                     gfi = request.getfeatureinfo;
                 if(parts.length > 0) {
                     layer.prefix = parts[0];
-
-
-
-
-
-
-
-
                 }
 
                 capability.layers.push(layer);
@@ -206,7 +198,7 @@ Ext.extend(QGIS.WMSCapabilitiesLoader, GeoExt.tree.WMSCapabilitiesLoader, {
                     layer.infoFormats = gfi.formats;
                 }
             }
-        },
+          },
 
           "Attributes": function(node, obj) {
             obj.attributes = []
@@ -223,9 +215,9 @@ Ext.extend(QGIS.WMSCapabilitiesLoader, GeoExt.tree.WMSCapabilitiesLoader, {
             };
             obj.push(attribute);
           },
-                    "SRS": function(node, obj) {
-                            obj.srs[this.getChildValue(node)] = true;
-                    }
+          "SRS": function(node, obj) {
+            obj.srs[this.getChildValue(node)] = true;
+          }
         }, OpenLayers.Format.WMSCapabilities.v1_3.prototype.readers["wms"])
       }
     }).read(this.WMSCapabilities);
@@ -278,7 +270,6 @@ Ext.extend(QGIS.WMSCapabilitiesLoader, GeoExt.tree.WMSCapabilitiesLoader, {
         showLegend: layer.showLegend,
         showMetadata: layer.showMetadata
       };
-      this.layerTitleNameMapping[layer.title] = layer.name;
       if (layer.visible) {
         this.initialVisibleLayers.push(layer.name);
 
@@ -475,18 +466,18 @@ Ext.extend(QGIS.PrintProvider, GeoExt.data.PrintProvider, {
 
     protocol.read({
         callback: function(response) {
-                try { // as some projects may have WFS disabled
-                    if(response.features != null) {
-                        if(response.features.length > 0) {
-                            attributes = response.features[0].attributes;
-                             for (key in attributes){
-                                printUrl += '&' + key + '=' + encodeURIComponent(attributes[key]);
-                            }
+            try { // as some projects may have WFS disabled
+                if(response.features != null) {
+                    if(response.features.length > 0) {
+                        attributes = response.features[0].attributes;
+                        for (key in attributes){
+                            printUrl += '&' + key + '=' + encodeURIComponent(attributes[key]);
                         }
                     }
-                } catch (e) {
-                    //console.log(e)
                 }
+            } catch (e) {
+               //console.log(e)
+            }
             this.download(printUrl);
         },
         scope: this
@@ -550,14 +541,12 @@ QGIS.SearchComboBox = Ext.extend(Ext.form.ComboBox, {
 
   initComponent: function() {
     // i18n
-	if(this.url.indexOf("api.geo.admin.ch") != -1){
-
-		this.useSwissNames = true;
-		this.highlightLayer = null;
-		this.highlightLayerName = null;
-		this.searchtables = null;
-
-	}
+    if(this.url.indexOf("api.geo.admin.ch") != -1){
+      this.useSwissNames = true;
+      this.highlightLayer = null;
+      this.highlightLayerName = null;
+      this.searchtables = null;
+    }
 
     this.emptyText = OpenLayers.i18n(searchFieldDefaultTextString[lang]);
     this.triggerConfig = { // we use a default clear trigger here
@@ -572,11 +561,10 @@ QGIS.SearchComboBox = Ext.extend(Ext.form.ComboBox, {
       fields.push(this.wmsHighlightLabelAttribute);
     }
 
-		if (this.useSwissNames) {
-			this.emptyText = 'Swisstopo SwissNames';
-			fields = ['name', 'service', 'label', 'bbox'];
-		}
-
+    if (this.useSwissNames) {
+      this.emptyText = 'Swisstopo SwissNames';
+      fields = ['name', 'service', 'label', 'bbox'];
+    }
 
     this.store = new Ext.data.JsonStore({
       proxy: new Ext.data.ScriptTagProxy({
@@ -595,29 +583,29 @@ QGIS.SearchComboBox = Ext.extend(Ext.form.ComboBox, {
 
       fields: fields
     });
-		if (this.useSwissNames) {
-			this.tpl = new Ext.XTemplate(
-				'<tpl for="."><div class="x-combo-list-item {name}">',
-				'<tpl if="service == null">',
-				'<b>',
-				'</tpl>',
-				'{label}',
-				'<tpl if="service == null">',
-				'</b>',
-				'</tpl>',
-				'</div></tpl>').compile();
-		}else{
-			this.tpl = new Ext.XTemplate(
-				'<tpl for="."><div class="x-combo-list-item {service}">',
-				'<tpl if="searchtable == null">',
-				'<b>',
-				'</tpl>',
-				'{displaytext}',
-				'<tpl if="searchtable == null">',
-				'</b>',
-				'</tpl>',
-				'</div></tpl>').compile();
-		}
+    if (this.useSwissNames) {
+      this.tpl = new Ext.XTemplate(
+        '<tpl for="."><div class="x-combo-list-item {name}">',
+        '<tpl if="service == null">',
+        '<b>',
+        '</tpl>',
+        '{label}',
+        '<tpl if="service == null">',
+        '</b>',
+        '</tpl>',
+        '</div></tpl>').compile();
+    }else{
+      this.tpl = new Ext.XTemplate(
+        '<tpl for="."><div class="x-combo-list-item {service}">',
+        '<tpl if="searchtable == null">',
+        '<b>',
+        '</tpl>',
+        '{displaytext}',
+        '<tpl if="searchtable == null">',
+        '</b>',
+        '</tpl>',
+        '</div></tpl>').compile();
+    }
 
 
     QGIS.SearchComboBox.superclass.initComponent.call(this);
@@ -670,17 +658,17 @@ QGIS.SearchComboBox = Ext.extend(Ext.form.ComboBox, {
 
   onSelect: function(record, index){
     if(this.fireEvent('beforeselect', this, record, index) !== false){
-		if (this.useSwissNames) {
-		  if (record.get('name') != null) {
-			this.setValue(record.get('label').replace(/<(?:.|\n)*?>/gm, ''));
-			this.fireEvent('select', this, record, index);
-		  }
-		}else{
-		  if (record.get('searchtable') != null) {
-			this.setValue(record.get('displaytext'));
-			this.fireEvent('select', this, record, index);
-		  }
-		}
+    if (this.useSwissNames) {
+      if (record.get('name') != null) {
+      this.setValue(record.get('label').replace(/<(?:.|\n)*?>/gm, ''));
+      this.fireEvent('select', this, record, index);
+      }
+    }else{
+      if (record.get('searchtable') != null) {
+      this.setValue(record.get('displaytext'));
+      this.fireEvent('select', this, record, index);
+      }
+    }
     }
   },
 
@@ -1525,7 +1513,8 @@ QGIS.LayerOrderPanel = Ext.extend(Ext.Panel, {
           renderer: function(value, metadata, record, rowIndex, colIndex, store) {
             // DOM element marker for inserting opacity sliders
             var layer = record.get('layer');
-            return layer + "<el id='layerOrder_" + me.escapeString(layer) + "'></el>";
+            var label = record.get('label');
+            return label + "<el id='layerOrder_" + me.escapeString(layer) + "'></el>";
           }
         },
         {
@@ -1649,9 +1638,10 @@ QGIS.LayerOrderPanel = Ext.extend(Ext.Panel, {
     QGIS.LayerOrderPanel.superclass.initComponent.call(this);
   },
 
-  addLayer: function(layer, opacity) {
+  addLayer: function(layer, label, opacity) {
     var rec = new this.store.recordType({
-      layer: layer
+      layer: layer,
+      label: label
     }, layer);
     // insert on top
     this.store.insert(0, rec);

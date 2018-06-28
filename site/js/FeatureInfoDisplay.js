@@ -237,7 +237,7 @@ function onClickPopupClosed(evt) {
     removeClickPopup();
     // enable the hover popup for the curent mosue position
     if (enableHoverPopup)
-		WMSGetFInfoHover.activate();
+        WMSGetFInfoHover.activate();
     var map = geoExtMap.map; // gets OL map object
     evt.xy = map.events.getMousePosition(evt); // non api function of OpenLayers.Events
     map.events.triggerEvent("mousemove", evt);
@@ -284,21 +284,21 @@ function runCustomFormatters(attValue, attName, layerName ){
 
 function parseFIResult(node) {
     if (node.hasChildNodes()) {
-		//test if we need to show the feature info layer title
-		//either from global setting or from project setting
-		var showFILayerTitle = showFeatureInfoLayerTitle;
-		if (mapThemeSwitcher) {
-			if (mapThemeSwitcher.activeProjectData != undefined) {
-				showFILayerTitle = mapThemeSwitcher.activeProjectData.showFeatureInfoLayerTitle;
-			}
-		}
+        //test if we need to show the feature info layer title
+        //either from global setting or from project setting
+        var showFILayerTitle = showFeatureInfoLayerTitle;
+        if (mapThemeSwitcher) {
+            if (mapThemeSwitcher.activeProjectData != undefined) {
+                showFILayerTitle = mapThemeSwitcher.activeProjectData.showFeatureInfoLayerTitle;
+            }
+        }
         if (node.hasChildNodes() && node.nodeName == "Layer") {
             var hasAttributes = false;
             var rasterData = false;
             var htmlText = "";
-			if (showFILayerTitle) {
-				htmlText += "<h2>" + wmsLoader.layerProperties[node.getAttribute("name")].title + "</h2>";
-			}
+            if (showFILayerTitle) {
+                htmlText += "<h2>" + wmsLoader.layerProperties[node.getAttribute("name")].title + "</h2>";
+            }
             var geoms = new Array();
             var layerChildNode = node.firstChild;
             while (layerChildNode) {
@@ -306,6 +306,7 @@ function parseFIResult(node) {
                     htmlText += '\n <p></p>\n <table>\n  <tbody>';
                     //case vector data
                     var attributeNode = layerChildNode.firstChild;
+                    i = 0;
                     while (attributeNode) {
                         if (attributeNode.nodeName == "Attribute") {
                             var attName = attributeNode.getAttribute("name");
@@ -317,7 +318,7 @@ function parseFIResult(node) {
                                     if (! suppressInfoGeometry) {
                                         htmlText += "\n   <tr>";
                                         if (showFieldNamesInClickPopup) {
-                                            htmlText += "<td>" + attName + ":</td>";
+                                            htmlText += "<td>" + i + ":" + attName + ":</td>";
                                         }
                                         htmlText += "<td>" + attValue + "</td></tr>";
                                         hasAttributes = true;
@@ -326,7 +327,7 @@ function parseFIResult(node) {
                                     if (attName !== "maptip") {
                                       htmlText += "\n   <tr>";
                                       if (showFieldNamesInClickPopup) {
-                                          htmlText += "<td>" + attName + ":</td>";
+                                          htmlText += "<td>" + i + ":" + attName + ":</td>";
                                       }
                                       // add hyperlinks for URLs in attribute values
                                       if (attValue != '' && /^((http|https|ftp):\/\/).+\..+/i.test(attValue)) {
@@ -346,9 +347,10 @@ function parseFIResult(node) {
                                       attValue = runCustomFormatters(attValue, attName, node.getAttribute("name"));
                                       htmlText += "<td>" + attValue + "</td></tr>";
                                       hasAttributes = true;
-                                  }
+                                    }
                                 }
                             }
+                            i++;
                         }
                         attributeNode = attributeNode.nextSibling;
                     }

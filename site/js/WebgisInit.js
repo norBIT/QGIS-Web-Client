@@ -332,7 +332,7 @@ function postLoading() {
 		for (var index = 0; index < visibleLayers.length; index++) {
 			// toggle checkboxes of visible layers
 			layerTree.root.findChildBy(function () {
-				if (wmsLoader.layerTitleNameMapping[this.attributes["text"]] == visibleLayers[index]) {
+				if (this.attributes.layer.metadata.name == visibleLayers[index]) {
 					this.getUI().toggleCheck(true);
 					// FIXME: never return true even if node is found to avoid TypeError
 					//				return true;
@@ -434,23 +434,23 @@ function postLoading() {
 	var wmtsLayers = Array();
 
 	layerTree.root.firstChild.cascade(
-
-	function (n) {
+	    function (n) {
 		if (n.isLeaf()) {
-			if (n.attributes.checked) {
-				if (!wmsLoader.layerProperties[wmsLoader.layerTitleNameMapping[n.text]].wmtsLayer) {
-				selectedLayers.push(wmsLoader.layerTitleNameMapping[n.text]);
-				}
-				else {
-					wmtsLayers.push(wmsLoader.layerTitleNameMapping[n.text]);
-				}
-				if (wmsLoader.layerProperties[wmsLoader.layerTitleNameMapping[n.text]].queryable) {
-					selectedQueryableLayers.push(wmsLoader.layerTitleNameMapping[n.text]);
-				}
+		    if (n.attributes.checked) {
+			if (!wmsLoader.layerProperties[n.attributes.layer.metadata.name].wmtsLayer) {
+			    selectedLayers.push(n.attributes.layer.metadata.name);
+			} else {
+			    wmtsLayers.push(n.attributes.layer.metadata.name);
 			}
-			allLayers.push(wmsLoader.layerTitleNameMapping[n.text]);
+			if (n.attributes.layer.metadata.queryable) {
+			    selectedQueryableLayers.push(n.attributes.layer.metadata.name);
+			}
+		    }
 		}
-	});
+		allLayers.push(n.attributes.layer.metadata.name);
+	    }
+	);
+
 	mainStatusText.setText(mapLoadingString[lang]);
 	format = imageFormatForLayers(selectedLayers);
 
@@ -1177,22 +1177,22 @@ function postLoading() {
 		var wmtsLayers = Array();
 
 		layerTree.root.firstChild.cascade(
-		function (n) {
+		    function (n) {
 			if (n.isLeaf() && n.attributes.checked) {
-				if (!wmsLoader.layerProperties[wmsLoader.layerTitleNameMapping[n.text]].wmtsLayer) {
-				selectedLayers.push(wmsLoader.layerTitleNameMapping[n.text]);
-				}
-				else {
-					wmtsLayers.push(wmsLoader.layerTitleNameMapping[n.text]);
-				}
-				if (wmsLoader.layerProperties[wmsLoader.layerTitleNameMapping[n.text]].queryable) {
-					selectedQueryableLayers.push(wmsLoader.layerTitleNameMapping[n.text]);
-				}
+			    if (!wmsLoader.layerProperties[n.attributes.layer.metadata.name].wmtsLayer) {
+				selectedLayers.push(n.attributes.layer.metadata.name);
+			    } else {
+				wmtsLayers.push(n.attributes.layer.metadata.name);
+			    }
+			    if (n.attributes.layer.metadata.queryable) {
+				selectedQueryableLayers.push(n.attributes.layer.metadata.name);
+			    }
 			}
-			
+
 			// Call custom action in Customizations.js
 			customActionLayerTreeCheck(n);
-		});
+		    }
+		);
 		format = imageFormatForLayers(selectedLayers);
 		updateLayerOrderPanelVisibilities();
 
@@ -1262,17 +1262,17 @@ function postLoading() {
 			});
 			
 			if (checkedBackgroundNodes.length == 1) {
-				newVisibleBaseLayer = checkedBackgroundNodes[0].layer.name;
+				newVisibleBaseLayer = checkedBackgroundNodes[0].layer.metadata.name;
 			} else if (checkedBackgroundNodes.length == 2) {
 				layerTree.removeListener("leafschange",leafsChangeFunction);
 				layerTree.root.lastChild.cascade(
 				function (n) {
 					if (n.isLeaf() && n.attributes.checked) {
-						if (n.layer.name == currentlyVisibleBaseLayer) {
+						if (n.layer.metadata.name == currentlyVisibleBaseLayer) {
 							n.unselect();
 							n.layer.setVisibility(false);
 						} else {
-							newVisibleBaseLayer = n.layer.name;
+							newVisibleBaseLayer = n.layer.metadata.name;
 						}
 					}
 				});
@@ -1799,7 +1799,7 @@ function postLoading() {
 function getVisibleLayers(visibleLayers, currentNode){
   while (currentNode != null){
     if (currentNode.attributes.checked) {
-      visibleLayers.push(wmsLoader.layerTitleNameMapping[currentNode.text]);
+      visibleLayers.push(currentNode.attribute.layer.metadata.name);
     } else if (currentNode.attributes.checked == null) {
       // this node is partly checked, so it is a layer group with some layers visible
       // dive into this group for layer visibility
@@ -1815,9 +1815,9 @@ function getVisibleLayers(visibleLayers, currentNode){
 function getVisibleFlatLayers(currentNode) {
   visibleLayers = [];
 	currentNode.cascade(function(node) {
-    if (node.isLeaf() && node.attributes.checked) {
-      visibleLayers.push(wmsLoader.layerTitleNameMapping[node.text]);
-    }
+            if (node.isLeaf() && node.attributes.checked) {
+                visibleLayers.push(node.attribute.layer.metadata.name);
+            }
 	});
 }
 
@@ -2190,7 +2190,7 @@ function addInfoButtonsToLayerTree() {
 	var treeRoot = layerTree.getNodeById("wmsNode");
 	treeRoot.firstChild.cascade(
 		function (n) {
-			var layerProperties = wmsLoader.layerProperties[wmsLoader.layerTitleNameMapping[n.text]];
+			var layerProperties = wmsLoader.layerProperties[n.attributes.layer.metadata.name];
 			if (!layerProperties.showLegend && !layerProperties.showMetadata) {
 				// no info button, add blank element to keep text aligned
 				Ext.DomHelper.insertBefore(n.getUI().getAnchor(), {
@@ -2199,21 +2199,21 @@ function addInfoButtonsToLayerTree() {
 				});
 			}
 			else {
-			// info button
-			var buttonId = 'layer_' + n.id;
-			Ext.DomHelper.insertBefore(n.getUI().getAnchor(), {
-				tag: 'b',
-				id: buttonId,
-				cls: 'layer-button x-tool custom-x-tool-info'
-			});
-            Ext.get(buttonId).on('click', function(e) {
-                if(typeof(interactiveLegendGetLegendURL) == 'undefined'){
-                    showLegendAndMetadata(n.text);
-                } else {
-                    showInteractiveLegendAndMetadata(n.text);
-                }
-            });
-		}
+				// info button
+				var buttonId = 'layer_' + n.id;
+				Ext.DomHelper.insertBefore(n.getUI().getAnchor(), {
+					tag: 'b',
+					id: buttonId,
+					cls: 'layer-button x-tool custom-x-tool-info'
+				});
+				Ext.get(buttonId).on('click', function(e) {
+					if(typeof(interactiveLegendGetLegendURL) == 'undefined'){
+						showLegendAndMetadata(n);
+					} else {
+						showInteractiveLegendAndMetadata(n);
+					}
+				});
+			}
 		}
 	);
 }
@@ -2223,11 +2223,10 @@ function addAbstractToLayerGroups() {
 	treeRoot.firstChild.cascade(
 		function (n) {
 			if (! n.isLeaf()) {
-				var layerProperties = wmsLoader.layerProperties[wmsLoader.layerTitleNameMapping[n.text]];
-				if (n == treeRoot.firstChild) {
+				var layerProperties = wmsLoader.layerProperties[n.attributes.layer.metadata.name];
+				if (n == treeRoot.firstChild && wmsLoader.projectSettings.service && wmsLoader.projectSettings.service.abstract) {
 					layerProperties.abstract = wmsLoader.projectSettings.service.abstract;
-				}
-				else if (layerProperties.abstract === undefined) {
+				} else if (layerProperties.abstract === undefined) {
 					layerProperties.abstract = layerGroupString[lang]+ ' "' + n.text + '"';
 				}
 			}
@@ -2246,7 +2245,7 @@ function initExclusiveLayerGroups() {
 	var activeLayers = [];
 	layerTree.root.firstChild.cascade(function(node) {
 		if (node.isLeaf() && node.attributes.checked) {
-			activeLayers.push(wmsLoader.layerTitleNameMapping[node.text]);
+			activeLayers.push(node.attributes.layer.metadata.name);
 		}
 	});
 
@@ -2282,7 +2281,7 @@ function initExclusiveLayerGroups() {
 		layerTree.root.firstChild.cascade(function(node) {
 			if (node.isLeaf() && node.attributes.checked) {
 				// uncheck layer node
-				if (layersToUncheck.indexOf(wmsLoader.layerTitleNameMapping[node.text]) != -1) {
+				if (layersToUncheck.indexOf(node.attributes.layer.metadata.name) != -1) {
 					node.getUI().toggleCheck(false);
 				}
 			}
@@ -2304,7 +2303,7 @@ function onLayerCheckboxClick(node) {
 			// layer checked
 
 			// collect other layers of the first matching exclusive layer group
-			var activeLayerName = wmsLoader.layerTitleNameMapping[node.text];
+			var activeLayerName = node.attributes.layer.metadata.name;
 			for (var i=0; i<wmsLoader.projectSettings.capability.exclusiveLayerGroups.length; i++) {
 				var exclusiveGroup = wmsLoader.projectSettings.capability.exclusiveLayerGroups[i];
 				if (exclusiveGroup.indexOf(activeLayerName) != -1) {
@@ -2320,7 +2319,7 @@ function onLayerCheckboxClick(node) {
 			var childLayers = [];
 			node.cascade(function(node) {
 				if (node.isLeaf()) {
-					childLayers.push(wmsLoader.layerTitleNameMapping[node.text]);
+					childLayers.push(node.attributes.layer.metadata.name);
 				}
 			});
 
@@ -2363,7 +2362,7 @@ function onLayerCheckboxClick(node) {
 			layerTree.root.firstChild.cascade(function(node) {
 				if (node.isLeaf() && node.attributes.checked) {
 					// uncheck layer node
-					if (layersToUncheck.indexOf(wmsLoader.layerTitleNameMapping[node.text]) != -1) {
+					if (layersToUncheck.indexOf(node.attributes.layer.metadata.name) != -1) {
 						node.getUI().toggleCheck(false);
 					}
 				}
@@ -2458,7 +2457,7 @@ function setupLayerOrderPanel() {
 		var layerProperties = wmsLoader.layerProperties[orderedLayers[i]];
 		if (layerProperties && !layerProperties.wmtsLayer) {
 			// skip WMTS base layers
-			layerOrderPanel.addLayer(orderedLayers[i], layerProperties.opacity);
+			layerOrderPanel.addLayer(orderedLayers[i], layerProperties.title, layerProperties.opacity);
 		}
 	}
 
@@ -2468,7 +2467,7 @@ function setupLayerOrderPanel() {
 			layerOrderPanel.on('layerVisibilityChange', function(layer) {
 				// deactivate layer node in layer tree
 				layerTree.root.findChildBy(function() {
-					if (wmsLoader.layerTitleNameMapping[this.attributes["text"]] == layer) {
+					if (this.attributes.layer.metadata.name == layer) {
 						this.getUI().toggleCheck();
 						// update active layers
 						layerTree.fireEvent('checkboxclick', this);
@@ -2506,7 +2505,7 @@ function updateLayerOrderPanelVisibilities() {
 	// update layer visibilities in layer order panel according to layer tree
 	layerTree.root.firstChild.cascade(function(node) {
 		if (node.isLeaf()) {
-			var layerName = wmsLoader.layerTitleNameMapping[node.text];
+			var layerName = node.attributes.layer.metadata.name;
 			if (layerOrderPanel.layerVisible(layerName) != node.attributes.checked) {
 				layerOrderPanel.toggleLayerVisibility(layerName);
 			}

@@ -43,7 +43,8 @@ else {
     var urlArray = urlString.split('?');
     //substr did not work on ie - patch from Noda
     var norewrite;
-    if (serverAndCGI.substr(serverAndCGI.length - 3, 3).toLowerCase() === "cgi") {
+    if (serverAndCGI.substr(serverAndCGI.length - 3, 3).toLowerCase() === "cgi" ||
+        serverAndCGI.substr(serverAndCGI.length - 7, 7).toLowerCase() === "cgi.exe") {
         norewrite = true;
     } else {
         norewrite = false;

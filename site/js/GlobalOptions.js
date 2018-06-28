@@ -2,12 +2,12 @@
 var lang = "en"; //for available codes see array availableLanguages in file GlobalOptions.js
 
 //Help file (must be a local file)
-var helpfile = "help_en.html";
+var helpfile = "help_" + lang + ".html";
 
 //Custom function to populate GetUrlParams variables
 var customGetUrlParamsParser = null;
 
-//Servername (optional) and path and name name of QGIS Server FCGI-file
+//Servername (optional) and path and name of QGIS Server FCGI-file
 //either with or without server-name - without servername recommended for easier porting to other servers
 //do not add a ? or & after the .fcgi extension
 var serverAndCGI = "/cgi-bin/qgis_mapserv.fcgi";

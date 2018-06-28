@@ -10,8 +10,9 @@
 */ 
 
 //scripts to display legend graphic and per layer metadata in a separate Ext window
-function showInteractiveLegendAndMetadata(layertitle) {
-	var layername = wmsLoader.layerTitleNameMapping[layertitle];
+function showInteractiveLegendAndMetadata(node) {
+	var layername = node.attributes.layer.metadata.name;
+	var layertitle = node.attributes.layer.metadata.title;
 	//initialize Ext Window if undefined
 	if (legendMetadataWindow == undefined) {
 		setupLegendAndMetadataWindow();
@@ -21,10 +22,10 @@ function showInteractiveLegendAndMetadata(layertitle) {
 		legendMetadataWindow.show();
 	}
 	//create legend URI from GlobalOptions.js interactiveLegendGetLegendURL
-    if (typeof(interactiveLegendGetLegendURL) == 'undefined'){
-        Ext.MessageBox.alert('Configuration error', 'interactiveLegendGetLegendURL is not defined. Set it in GlobalOptions.js');
-        return;
-    }
+        if (typeof(interactiveLegendGetLegendURL) == 'undefined'){
+            Ext.MessageBox.alert('Configuration error', 'interactiveLegendGetLegendURL is not defined. Set it in GlobalOptions.js');
+            return;
+        }
 	var legendUrl =  interactiveLegendGetLegendURL + Ext.urlEncode({
 		layer: layername
 	});
@@ -109,8 +110,9 @@ function showInteractiveLegendAndMetadata(layertitle) {
 
 
 //scripts to display legend graphic and per layer metadata in a separate Ext window
-function showLegendAndMetadata(layertitle) {
-	var layername = wmsLoader.layerTitleNameMapping[layertitle];
+function showLegendAndMetadata(node) {
+	var layername = node.attributes.layer.metadata.name;
+	var layertitle = node.attributes.layer.metadata.title;
 	//initialize Ext Window if undefined
 	if (legendMetadataWindow == undefined) {
 		setupLegendAndMetadataWindow();

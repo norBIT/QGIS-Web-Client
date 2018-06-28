@@ -15,9 +15,9 @@ import string #string manipulation support
 from webob import Request
 from webob import Response
 import psycopg2 #PostgreSQL DB Connection
-import psycopg2.extras #z.b. für named column indexes
+import psycopg2.extras # e.g. for named column indexes
 import json
-import sys #für Fehlerreporting
+import sys #for error reporting
 import os
 
 # append the Python path with the wsgi-directory
@@ -94,7 +94,7 @@ def application(environ, start_response):
     if i < searchtableLength - 1:
       sql += " UNION "
 
-  sql += " ORDER BY search_category ASC, displaytext ASC;"
+  sql += " ORDER BY search_category ASC, displaytext ASC"
 
   conn = qwc_connect.getConnection(environ, start_response)
   
@@ -108,7 +108,7 @@ def application(environ, start_response):
   except:
     exceptionType, exceptionValue, exceptionTraceback = sys.exc_info()
     conn.close()
-    errorText += 'error: could not execute query'
+    errorText += ('error: could not execute query [%s]' % sql).encode("ascii")
     # write the error message to the error.log
     print >> environ['wsgi.errors'], "%s" % errorText+": "+str(exceptionValue)
     response_headers = [('Content-type', 'text/plain'),
